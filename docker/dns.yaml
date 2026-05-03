@@ -1,0 +1,26 @@
+services:
+  dns:
+    image: strm/dnsmasq
+    container_name: cmn-dns
+    platform: linux/amd64
+    ports:
+      - "8053:8080"
+    environment:
+      - HTTP_USER=admin
+      - HTTP_PASS=admin
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    command:
+      - --address=/cmn.local/10.88.0.10
+      - --address=/mail.cmn.local/10.88.0.10
+      - --address=/roundcube.cmn.local/10.88.0.11
+      - --mx-host=cmn.local,mail.cmn.local,10
+      - --txt-record=cmn.local,v=spf1 mx a ip4:10.88.0.10 ~all
+      - --txt-record=_dmarc.cmn.local,v=DMARC1; p=none; rua=mailto:dmarc@cmn.local
+      - --host-record=10.88.0.10.in-addr.arpa,mail.cmn.local
+      - --log-queries
+      - --no-resolv
+    networks:
+      cmn-network:
+        ipv4_address: 10.88.0.53

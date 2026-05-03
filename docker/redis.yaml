@@ -1,0 +1,14 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: cmn-redis
+    platform: ${DOCKER_PLATFORM:-linux/arm64}
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--port", "6379", "--requirepass", "mysecretpassword", "--user", "default", "on", ">mysecretpassword", "+@all", "~*", "&*"]
+    tmpfs:
+      - /data
+    networks:
+      - cmn-network
+    dns:
+      - 10.88.0.53

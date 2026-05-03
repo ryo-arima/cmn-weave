@@ -1,0 +1,34 @@
+services:
+  server:
+    build:
+      context: ..
+      dockerfile: Dockerfile.server
+    container_name: cmn-server
+    platform: ${DOCKER_PLATFORM:-linux/arm64}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./etc/server.yaml.docker:/app/etc/server.yaml:ro
+    secrets:
+      - root.crt
+      - server.crt
+      - server.key
+      - server-client.crt
+      - server-client.key
+    networks:
+      - cmn-network
+    dns:
+      - 10.88.0.53
+    restart: unless-stopped
+
+secrets:
+  root.crt:
+    file: ../etc/common/root.crt
+  server.crt:
+    file: ../etc/server/server.crt
+  server.key:
+    file: ../etc/server/server.key
+  server-client.crt:
+    file: ../etc/server/server-client.crt
+  server-client.key:
+    file: ../etc/server/server-client.key

@@ -1,0 +1,29 @@
+# ---- Rust build stage ----
+FROM rust:1-slim-bookworm AS rust-builder
+WORKDIR /src
+COPY pkg/agent/rust/ pkg/agent/rust/
+# Build the static library; place artifacts under target/ at the project root
+# so the cgo LDFLAGS (-L../../../../target/release) resolves correctly.
+RUN cargo build --release \
+    --manifest-path pkg/agent/rust/Cargo.toml \
+    --target-dir target
+
+# ---- Go + CGO build stage ----
+FROM golang:1.25-bookworm AS go-builder
+WORKDIR /src
+COPY go.mod ./
+RUN go mod download
+COPY . .
+# Bring in the compiled static library from the Rust stage.
+COPY --from=rust-builder /src/target/release/libcmnweave_core.a target/release/libcmnweave_core.a
+RUN CGO_ENABLED=1 GOOS=linux go build -o /out/agent ./cmd/agent
+
+# ---- Runtime stage ----
+FROM ubuntu:24.04
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY --from=go-builder /out/agent ./agent
+EXPOSE 9443
+ENTRYPOINT ["./agent", "--config", "/etc/cmn-weave/agent.yaml"]

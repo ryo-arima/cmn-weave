@@ -1,0 +1,45 @@
+x-agent-base: &agent-base
+  build:
+    context: ..
+    dockerfile: Dockerfile.agent
+  platform: ${DOCKER_PLATFORM:-linux/arm64}
+  networks:
+    - cmn-network
+  dns:
+    - 10.88.0.53
+  restart: unless-stopped
+
+services:
+  agent-1:
+    <<: *agent-base
+    container_name: cmn-agent-1
+    hostname: agent-1
+    ports:
+      - "9443:9443"
+    volumes:
+      - ./etc/agent-1.yaml.docker:/app/etc/agent.yaml:ro
+    secrets:
+      - root.crt
+      - agent.crt
+      - agent.key
+
+  agent-2:
+    <<: *agent-base
+    container_name: cmn-agent-2
+    hostname: agent-2
+    ports:
+      - "9444:9443"
+    volumes:
+      - ./etc/agent-2.yaml.docker:/app/etc/agent.yaml:ro
+    secrets:
+      - root.crt
+      - agent.crt
+      - agent.key
+
+secrets:
+  root.crt:
+    file: ../etc/common/root.crt
+  agent.crt:
+    file: ../etc/agent/agent.crt
+  agent.key:
+    file: ../etc/agent/agent.key

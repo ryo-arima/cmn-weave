@@ -1,0 +1,23 @@
+application:
+  server:
+    listen_addr: ":8000"
+    tls:
+      ca_file:   /run/secrets/root.crt
+      cert_file: /run/secrets/server.crt
+      key_file:  /run/secrets/server.key
+    agents:
+      - agent-1.cmn.local:9443
+
+postgresql:
+  host:    postgres
+  port:    5432
+  user:    cmnweave
+  pass:    secret
+  dbname:  cmnweave
+  sslmode: disable
+
+redis:
+  host: redis
+  port: 6379
+  db:   0
+

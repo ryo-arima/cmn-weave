@@ -1,0 +1,22 @@
+application:
+  server:
+    listen_addr: ":8443"
+    tls:
+      ca_file:   etc/common/root.crt
+      cert_file: etc/server/server.crt
+      key_file:  etc/server/server.key
+    agents:
+      - agent-1.cmn.local:9443
+
+postgresql:
+  host:    localhost
+  port:    5432
+  user:    cmnweave
+  pass:    secret
+  dbname:  cmnweave
+  sslmode: require
+
+redis:
+  host: localhost
+  port: 6379
+  db:   0

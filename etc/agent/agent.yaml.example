@@ -1,0 +1,7 @@
+application:
+  agent:
+    listen_addr: ":9443"
+    tls:
+      ca_file:   etc/common/root.crt
+      cert_file: etc/agent/agent.crt
+      key_file:  etc/agent/agent.key

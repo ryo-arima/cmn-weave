@@ -1,0 +1,7 @@
+application:
+  agent:
+    listen_addr: ":9443"
+    tls:
+      ca_file:   /run/secrets/root.crt
+      cert_file: /run/secrets/agent.crt
+      key_file:  /run/secrets/agent.key

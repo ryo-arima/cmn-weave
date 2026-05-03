@@ -1,0 +1,16 @@
+[package]
+name = "cmnweave_core"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# The crate is consumed from Go via cgo. A static library keeps the agent
+# binary self-contained; switch to "cdylib" if dynamic loading is required.
+[lib]
+name = "cmnweave_core"
+crate-type = ["staticlib"]
+
+[dependencies]
+
+[build-dependencies]
+cbindgen = "0.29"

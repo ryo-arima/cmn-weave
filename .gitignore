@@ -1,0 +1,22 @@
+# Binaries
+/server
+/agent
+/client
+
+# Generated certificate and key files
+etc/common/*.crt
+etc/common/*.key
+etc/server/*.crt
+etc/server/*.key
+etc/agent/*.crt
+etc/agent/*.key
+etc/client/*.crt
+etc/client/*.key
+
+# Local config (copy from *.yaml.example and customize)
+etc/server.yaml
+etc/agent.yaml
+etc/client.yaml
+
+# Build artifacts
+dist/

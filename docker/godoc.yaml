@@ -1,0 +1,15 @@
+services:
+  godoc:
+    image: golang:1.24
+    container_name: cmn-godoc
+    platform: ${DOCKER_PLATFORM:-linux/arm64}
+    ports:
+      - "3003:6060"
+    volumes:
+      - .:/go/src/github.com/ryo-arima/cmn-weave:ro
+    working_dir: /go/src/github.com/ryo-arima/cmn-weave
+    command: ["sh", "-c", "go install golang.org/x/tools/cmd/godoc@latest && godoc -http=:6060"]
+    depends_on:
+      - dns
+    networks:
+      - cmn-network

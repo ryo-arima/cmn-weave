@@ -1,0 +1,15 @@
+services:
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    container_name: cmn-swagger-ui
+    platform: ${DOCKER_PLATFORM:-linux/arm64}
+    ports:
+      - "3002:8080"
+    environment:
+      - SWAGGER_JSON=/swagger/swagger.yaml
+    volumes:
+      - ./docs/swagger:/swagger:ro
+    networks:
+      - cmn-network
+    dns:
+      - 10.88.0.53

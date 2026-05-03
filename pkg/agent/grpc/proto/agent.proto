@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package cmnweave.agent.v1;
+
+option go_package = "github.com/ryo-arima/cmn-weave/pkg/agent/grpc/auto;agentpb";
+
+// AgentService is the gRPC surface exposed by every agent.
+//
+// The service is task-oriented: the server sends a Dispatch with a task
+// payload, polls Status, and may issue Cancel. Long-running output is
+// streamed back via StreamLogs.
+service AgentService {
+  // Dispatch enqueues a new task on the agent.
+  rpc Dispatch(DispatchRequest) returns (DispatchResponse);
+
+  // Status returns the current state of a task.
+  rpc Status(StatusRequest) returns (StatusResponse);
+
+  // Cancel requests cooperative termination of a task.
+  rpc Cancel(CancelRequest) returns (CancelResponse);
+
+  // StreamLogs streams stdout/stderr lines for a running task.
+  rpc StreamLogs(StreamLogsRequest) returns (stream LogLine);
+}
+
+message DispatchRequest {
+  // Opaque, server-assigned identifier for the task.
+  string task_id = 1;
+  // Command to execute, including any arguments.
+  repeated string argv = 2;
+  // Environment variables to set for the task ("KEY=VALUE").
+  repeated string env = 3;
+}
+
+message DispatchResponse {
+  string task_id = 1;
+  TaskState state = 2;
+}
+
+message StatusRequest { string task_id = 1; }
+
+message StatusResponse {
+  string task_id = 1;
+  TaskState state = 2;
+  int32 exit_code = 3;
+  string error_message = 4;
+}
+
+message CancelRequest { string task_id = 1; }
+message CancelResponse { string task_id = 1; TaskState state = 2; }
+
+message StreamLogsRequest { string task_id = 1; }
+message LogLine {
+  string task_id = 1;
+  Stream stream = 2;
+  bytes data = 3;
+
+  enum Stream {
+    STREAM_UNSPECIFIED = 0;
+    STREAM_STDOUT = 1;
+    STREAM_STDERR = 2;
+  }
+}
+
+enum TaskState {
+  TASK_STATE_UNSPECIFIED = 0;
+  TASK_STATE_PENDING = 1;
+  TASK_STATE_RUNNING = 2;
+  TASK_STATE_SUCCEEDED = 3;
+  TASK_STATE_FAILED = 4;
+  TASK_STATE_CANCELLED = 5;
+}

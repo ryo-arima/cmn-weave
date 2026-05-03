@@ -1,0 +1,20 @@
+services:
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: cmn-pgadmin
+    platform: ${DOCKER_PLATFORM:-linux/arm64}
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@cmn.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_CHECK_EMAIL_DELIVERABILITY: "False"
+      PGADMIN_CONFIG_ALLOW_SPECIAL_EMAIL_DOMAINS: "['local']"
+    volumes:
+      - ./scripts/data/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    ports:
+      - "3001:80"
+    networks:
+      - cmn-network
+    dns:
+      - 10.88.0.53
